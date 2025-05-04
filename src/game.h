@@ -6,7 +6,6 @@
 #include "renderer.h"
 #include "physics.h"
 
-
 enum {
     GAME_WND_W = 1024,
     GAME_WND_H = 768

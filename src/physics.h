@@ -26,7 +26,7 @@ struct PhysicsSoftBody {
     void ApplyImpulse(float impulseX, float impulseY);
 };
 
-struct PhysicsSoftBodyJointConn{
+struct PhysicsSoftBodyJointConn {
     uint32_t vertex1;
     uint32_t vertex2;
 };
