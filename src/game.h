@@ -20,9 +20,5 @@ private:
     Platform m_platform;
     Renderer m_renderer;
     Physics m_physics;
-
-    void RenderBox(const std::span<const b2Vec2>& vertices, unsigned int texIdx);
-    void RenderCircleAsRect(b2Vec2 position, float radius, unsigned int texIdx);
-    void RenderBread(const std::span<const b2Vec2>& vertices, unsigned int texIdx);
 };
 

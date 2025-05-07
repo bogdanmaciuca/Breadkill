@@ -61,8 +61,8 @@ Renderer::Renderer(SDL_Window* pWindow, const std::span<const std::string>& text
 
     // Pipeline & shaders
     InitPipeline(
-        "C:/Users/Bogdan/Documents/C_Projects/breadkill/shaders_compiled/shader.vert.spv",
-        "C:/Users/Bogdan/Documents/C_Projects/breadkill/shaders_compiled/shader.frag.spv"
+        "shaders_compiled/shader.vert.spv",
+        "shaders_compiled/shader.frag.spv"
     );
 }
 

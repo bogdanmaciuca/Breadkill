@@ -37,11 +37,15 @@ constexpr std::array<PhysicsSoftBodyJointConn, 8> g_softbodyConnections = {
     PhysicsSoftBodyJointConn{ 1, 4 },
 };
 
+constexpr float PLAYER_FORCE = 0.008f;
+
 class Player : public Entity {
 public:
     Player(Platform& platform, Renderer& renderer, Physics& physics, unsigned int texIdx);
     void Render() override;
     void Update() override;
+    b2Vec2 GetPosition();
+    void ApplyImpulse(float x, float y);
 private:
     PhysicsSoftBody m_physicsObject;
 };
@@ -50,7 +54,30 @@ class Wall : public Entity {
 public:
     Wall(Platform& platform, Renderer& renderer, Physics& physics, unsigned int texIdx, b2Vec2 pos, b2Vec2 size);
     void Render() override;
-    void Update() {}
+    void Update() override {}
 private:
     PhysicsRigidBox m_physicsObject;
+};
+
+constexpr float ENEMY_FORCE = 0.0004f;
+
+class Enemy : public Entity {
+public:
+    Enemy(Platform& platform, Renderer& renderer, Physics& physics, unsigned int texIdx, b2Vec2 pos);
+    void Render() override;
+    void Update() override;
+private:
+    PhysicsSoftBody m_physicsObject;
+};
+
+constexpr float BULLET_RADIUS = 0.10f;
+constexpr float BULLET_SPEED_COEF = 1.0f;
+
+class Bullet : public Entity {
+public:
+    Bullet(Platform& platform, Renderer& renderer, Physics& physics, unsigned int texIdx, b2Vec2 pos, b2Vec2 dir);
+    void Render() override;
+    void Update() override {};
+private:
+    PhysicsRigidCircle m_physicsObject;
 };

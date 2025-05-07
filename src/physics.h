@@ -10,14 +10,16 @@ enum {
 struct PhysicsRigidBox {
     b2BodyId Id;
     b2Polygon polygon;
-    std::vector<b2Vec2> GetWorldVertices();
+    std::vector<b2Vec2> GetWorldVertices() const;
 };
 
 struct PhysicsRigidCircle {
     b2BodyId Id;
     b2Circle circle;
-    float GetRadius();
-    b2Vec2 GetPosition();
+    float GetRadius() const;
+    b2Vec2 GetPosition() const;
+    std::vector<b2Vec2> GetWorldVertices() const;
+    void ApplyImpulse(float impulseX, float impulseY);
 };
 
 struct PhysicsSoftBody {

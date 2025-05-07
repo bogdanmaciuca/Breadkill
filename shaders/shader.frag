@@ -10,6 +10,8 @@ layout (location = 0) out vec4 FragColor;
 
 layout (set = 2, binding = 0) uniform sampler2D sampler0;
 layout (set = 2, binding = 1) uniform sampler2D sampler1;
+layout (set = 2, binding = 2) uniform sampler2D sampler2;
+layout (set = 2, binding = 3) uniform sampler2D sampler3;
 
 void main() {
 #ifdef DEBUG
@@ -24,6 +26,8 @@ void main() {
     switch (oTexIdx) {
         case 0: FragColor = texture(sampler0, oTexCoord); break;
         case 1: FragColor = texture(sampler1, oTexCoord); break;
+        case 2: FragColor = texture(sampler2, oTexCoord); break;
+        case 3: FragColor = texture(sampler3, oTexCoord); break;
     }
 #endif
 }

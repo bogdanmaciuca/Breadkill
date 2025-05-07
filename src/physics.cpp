@@ -3,7 +3,7 @@
 #include <vector>
 #include "box2d/box2d.h"
 
-std::vector<b2Vec2> PhysicsRigidBox::GetWorldVertices() {
+std::vector<b2Vec2> PhysicsRigidBox::GetWorldVertices() const {
     std::vector<b2Vec2> vertices(polygon.count);
     for (int i = 0; i < polygon.count; i++) {
         vertices[i] = b2TransformPoint(b2Body_GetTransform(Id), polygon.vertices[i]);
@@ -11,12 +11,29 @@ std::vector<b2Vec2> PhysicsRigidBox::GetWorldVertices() {
     return vertices;
 }
 
-b2Vec2 PhysicsRigidCircle::GetPosition() {
+float PhysicsRigidCircle::GetRadius() const {
+    return circle.radius;
+}
+
+b2Vec2 PhysicsRigidCircle::GetPosition() const {
     return b2Body_GetPosition(Id);
 }
 
-float PhysicsRigidCircle::GetRadius() {
-    return circle.radius;
+std::vector<b2Vec2> PhysicsRigidCircle::GetWorldVertices() const {
+    std::vector<b2Vec2> vertices = {
+        b2Vec2{ .x = -GetRadius(), .y = -GetRadius() },
+        b2Vec2{ .x = +GetRadius(), .y = -GetRadius() },
+        b2Vec2{ .x = +GetRadius(), .y = +GetRadius() },
+        b2Vec2{ .x = -GetRadius(), .y = +GetRadius() },
+    };
+    for (int i = 0; i < vertices.size(); i++) {
+        vertices[i] = b2TransformPoint(b2Body_GetTransform(Id), vertices[i]);
+    }
+    return vertices;
+}
+
+void PhysicsRigidCircle::ApplyImpulse(float impulseX, float impulseY) {
+    b2Body_ApplyLinearImpulseToCenter(Id, b2Vec2{impulseX, impulseY}, true);
 }
 
 void PhysicsSoftBody::ApplyImpulse(float impulseX, float impulseY) {
