@@ -14,11 +14,10 @@ enum {
 class Game {
 public:
     Game();
-    void Run();
     ~Game();
+    void Run();
 private:
     Platform m_platform;
-    Renderer m_renderer;
     Physics m_physics;
 };
 

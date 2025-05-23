@@ -4,7 +4,7 @@
 #include "renderer.h"
 #include "physics.h"
 
-void RenderSoftbody(Renderer& renderer, const PhysicsSoftBody& softbody, unsigned int texIdx) {
+void RenderSoftbody(const PhysicsSoftBody& softbody, unsigned int texIdx) {
     std::array<b2Vec2, 6> vertices;
     for (int i = 0; i < g_softbodyVertices.size(); i++) {
         vertices[i] = softbody.vertices[i].GetPosition();
@@ -20,40 +20,40 @@ void RenderSoftbody(Renderer& renderer, const PhysicsSoftBody& softbody, unsigne
     triangle.points[0] = RendererVertex{ .x = vertices[0].x, .y = vertices[0].y, .u = 0.0f, .v = 1.0f, .texIdx = texIdx };
     triangle.points[1] = RendererVertex{ .x = vertices[1].x, .y = vertices[1].y, .u = 1.0f, .v = 1.0f, .texIdx = texIdx };
     triangle.points[2] = RendererVertex{ .x =      center.x, .y =      center.y, .u = 0.5f, .v = 0.5f, .texIdx = texIdx };
-    renderer.PushTriangle(triangle);
+    Renderer::GetInstance().PushTriangle(triangle);
 
     triangle.points[0] = RendererVertex{ .x = vertices[1].x, .y = vertices[1].y, .u = 1.0f, .v = 1.0f, .texIdx = texIdx };
     triangle.points[1] = RendererVertex{ .x = vertices[2].x, .y = vertices[2].y, .u = 1.0f, .v = 0.5f, .texIdx = texIdx };
     triangle.points[2] = RendererVertex{ .x =      center.x, .y =      center.y, .u = 0.5f, .v = 0.5f, .texIdx = texIdx };
-    renderer.PushTriangle(triangle);
+    Renderer::GetInstance().PushTriangle(triangle);
 
     triangle.points[0] = RendererVertex{ .x = vertices[2].x, .y = vertices[2].y, .u = 1.0f, .v = 0.5f, .texIdx = texIdx };
     triangle.points[1] = RendererVertex{ .x = vertices[3].x, .y = vertices[3].y, .u = 1.0f, .v = 0.0f, .texIdx = texIdx };
     triangle.points[2] = RendererVertex{ .x =      center.x, .y =      center.y, .u = 0.5f, .v = 0.5f, .texIdx = texIdx };
-    renderer.PushTriangle(triangle);
+    Renderer::GetInstance().PushTriangle(triangle);
 
     triangle.points[0] = RendererVertex{ .x = vertices[3].x, .y = vertices[3].y, .u = 1.0f, .v = 0.0f, .texIdx = texIdx };
     triangle.points[1] = RendererVertex{ .x = vertices[4].x, .y = vertices[4].y, .u = 0.0f, .v = 0.0f, .texIdx = texIdx };
     triangle.points[2] = RendererVertex{ .x =      center.x, .y =      center.y, .u = 0.5f, .v = 0.5f, .texIdx = texIdx };
-    renderer.PushTriangle(triangle);
+    Renderer::GetInstance().PushTriangle(triangle);
 
     triangle.points[0] = RendererVertex{ .x = vertices[4].x, .y = vertices[4].y, .u = 0.0f, .v = 0.0f, .texIdx = texIdx };
     triangle.points[1] = RendererVertex{ .x = vertices[5].x, .y = vertices[5].y, .u = 0.0f, .v = 0.5f, .texIdx = texIdx };
     triangle.points[2] = RendererVertex{ .x =      center.x, .y =      center.y, .u = 0.5f, .v = 0.5f, .texIdx = texIdx };
-    renderer.PushTriangle(triangle);
+    Renderer::GetInstance().PushTriangle(triangle);
 
     triangle.points[0] = RendererVertex{ .x = vertices[5].x, .y = vertices[5].y, .u = 0.0f, .v = 0.5f, .texIdx = texIdx };
     triangle.points[1] = RendererVertex{ .x = vertices[0].x, .y = vertices[0].y, .u = 0.0f, .v = 1.0f, .texIdx = texIdx };
     triangle.points[2] = RendererVertex{ .x =      center.x, .y =      center.y, .u = 0.5f, .v = 0.5f, .texIdx = texIdx };
-    renderer.PushTriangle(triangle);
+    Renderer::GetInstance().PushTriangle(triangle);
 }
 
-Entity::Entity(Platform& platform, Renderer& renderer, Physics& physics, unsigned int m_texIdx)
-    : m_platformRef(platform), m_rendererRef(renderer), m_physicsRef(physics), m_texIdx(m_texIdx)
+Entity::Entity(Platform& platform, Physics& physics, unsigned int m_texIdx)
+    : m_platformRef(platform), m_physicsRef(physics), m_texIdx(m_texIdx)
 {}
 
-Wall::Wall(Platform& platform, Renderer& renderer, Physics& physics, unsigned int texIdx, b2Vec2 pos, b2Vec2 size)
-    : Entity(platform, renderer, physics, texIdx)
+Wall::Wall(Platform& platform, Physics& physics, unsigned int texIdx, b2Vec2 pos, b2Vec2 size)
+    : Entity(platform, physics, texIdx)
 {
     m_physicsObject = m_physicsRef.CreateBox(pos, size);
 }
@@ -69,25 +69,25 @@ void Wall::Render() {
     triangle.points[0].u = 0;     triangle.points[0].v = height;
     triangle.points[1].u = width; triangle.points[1].v = height;
     triangle.points[2].u = width; triangle.points[2].v = 0;
-    m_rendererRef.PushTriangle(triangle);
+    Renderer::GetInstance().PushTriangle(triangle);
     triangle.points[0] = RendererVertex{ .x = vertices[0].x, .y = vertices[0].y, .texIdx = m_texIdx };
     triangle.points[1] = RendererVertex{ .x = vertices[2].x, .y = vertices[2].y, .texIdx = m_texIdx };
     triangle.points[2] = RendererVertex{ .x = vertices[3].x, .y = vertices[3].y, .texIdx = m_texIdx };
     triangle.points[0].u = 0;     triangle.points[0].v = height;
     triangle.points[1].u = width; triangle.points[1].v = 0;
     triangle.points[2].u = 0;     triangle.points[2].v = 0;
-    m_rendererRef.PushTriangle(triangle);
+    Renderer::GetInstance().PushTriangle(triangle);
 }
 
-Player::Player(Platform& platform, Renderer& renderer, Physics& physics, unsigned int m_texIdx)
-    : Entity(platform, renderer, physics, m_texIdx)
+Player::Player(Platform& platform, Physics& physics, unsigned int m_texIdx)
+    : Entity(platform, physics, m_texIdx)
 {
     m_physicsObject = m_physicsRef.CreateSoftBody(
         b2Vec2{ 5.0f, 1.0f }, g_softbodyVertices, g_softbodyConnections);
 }
 
 void Player::Render() {
-    RenderSoftbody(m_rendererRef, m_physicsObject, m_texIdx);
+    RenderSoftbody(m_physicsObject, m_texIdx);
 }
 
 void Player::Update() {
@@ -101,15 +101,15 @@ void Player::ApplyImpulse(float x, float y) {
     m_physicsObject.ApplyImpulse(x, y);
 }
 
-Enemy::Enemy(Platform& platform, Renderer& renderer, Physics& physics, unsigned int texIdx, b2Vec2 pos)
-    : Entity(platform, renderer, physics, texIdx)
+Enemy::Enemy(Platform& platform, Physics& physics, unsigned int texIdx, b2Vec2 pos)
+    : Entity(platform, physics, texIdx)
 {
     m_physicsObject = m_physicsRef.CreateSoftBody(
         pos, g_softbodyVertices, g_softbodyConnections);
 }
 
 void Enemy::Render() {
-    RenderSoftbody(m_rendererRef, m_physicsObject, m_texIdx);
+    RenderSoftbody(m_physicsObject, m_texIdx);
 }
 
 void Enemy::Update() {
@@ -126,8 +126,8 @@ void Enemy::Update() {
     );
 }
 
-Bullet::Bullet(Platform& platform, Renderer& renderer, Physics& physics, unsigned int texIdx, b2Vec2 pos, b2Vec2 dir)
-    : Entity(platform, renderer, physics, texIdx)
+Bullet::Bullet(Platform& platform, Physics& physics, unsigned int texIdx, b2Vec2 pos, b2Vec2 dir)
+    : Entity(platform, physics, texIdx)
 {
     m_physicsObject = physics.CreateCircle(pos, BULLET_RADIUS, true);
     m_physicsObject.ApplyImpulse(
@@ -147,14 +147,14 @@ void Bullet::Render() {
     triangle.points[0].u = 0; triangle.points[0].v = 1;
     triangle.points[1].u = 1; triangle.points[1].v = 1;
     triangle.points[2].u = 1; triangle.points[2].v = 0;
-    m_rendererRef.PushTriangle(triangle);
+    Renderer::GetInstance().PushTriangle(triangle);
     triangle.points[0] = RendererVertex{ .x = vertices[0].x, .y = vertices[0].y, .texIdx = m_texIdx };
     triangle.points[1] = RendererVertex{ .x = vertices[2].x, .y = vertices[2].y, .texIdx = m_texIdx };
     triangle.points[2] = RendererVertex{ .x = vertices[3].x, .y = vertices[3].y, .texIdx = m_texIdx };
     triangle.points[0].u = 0; triangle.points[0].v = 1;
     triangle.points[1].u = 1; triangle.points[1].v = 0;
     triangle.points[2].u = 0; triangle.points[2].v = 0;
-    m_rendererRef.PushTriangle(triangle);
+    Renderer::GetInstance().PushTriangle(triangle);
 }
 
 

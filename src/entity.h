@@ -8,12 +8,11 @@
 
 class Entity {
 public:
-    Entity(Platform& platform, Renderer& renderer, Physics& physics, unsigned int texIdx);
+    Entity(Platform& platform, Physics& physics, unsigned int texIdx);
     virtual void Render() = 0;
     virtual void Update() = 0;
 protected:
     Platform &m_platformRef;
-    Renderer &m_rendererRef;
     Physics &m_physicsRef;
     unsigned int m_texIdx;
 };
@@ -41,7 +40,7 @@ constexpr float PLAYER_FORCE = 0.008f;
 
 class Player : public Entity {
 public:
-    Player(Platform& platform, Renderer& renderer, Physics& physics, unsigned int texIdx);
+    Player(Platform& platform, Physics& physics, unsigned int texIdx);
     void Render() override;
     void Update() override;
     b2Vec2 GetPosition();
@@ -52,7 +51,7 @@ private:
 
 class Wall : public Entity {
 public:
-    Wall(Platform& platform, Renderer& renderer, Physics& physics, unsigned int texIdx, b2Vec2 pos, b2Vec2 size);
+    Wall(Platform& platform, Physics& physics, unsigned int texIdx, b2Vec2 pos, b2Vec2 size);
     void Render() override;
     void Update() override {}
 private:
@@ -63,7 +62,7 @@ constexpr float ENEMY_FORCE = 0.0004f;
 
 class Enemy : public Entity {
 public:
-    Enemy(Platform& platform, Renderer& renderer, Physics& physics, unsigned int texIdx, b2Vec2 pos);
+    Enemy(Platform& platform, Physics& physics, unsigned int texIdx, b2Vec2 pos);
     void Render() override;
     void Update() override;
 private:
@@ -75,7 +74,7 @@ constexpr float BULLET_SPEED_COEF = 1.0f;
 
 class Bullet : public Entity {
 public:
-    Bullet(Platform& platform, Renderer& renderer, Physics& physics, unsigned int texIdx, b2Vec2 pos, b2Vec2 dir);
+    Bullet(Platform& platform, Physics& physics, unsigned int texIdx, b2Vec2 pos, b2Vec2 dir);
     void Render() override;
     void Update() override {};
 private:

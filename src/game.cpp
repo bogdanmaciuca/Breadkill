@@ -2,13 +2,39 @@
 
 #include <array>
 #include <chrono>
-#include <memory>
 #include <vector>
-#include "SDL3/SDL.h"
 #include "entity.h"
 
-Game::Game()
-    : m_renderer(
+template<class T>
+class SmartPtr {
+public:
+    SmartPtr(T* pPtr) : m_pPtr(pPtr) {}
+    SmartPtr(SmartPtr&& other) {
+        m_pPtr = other.m_pPtr;
+        other.m_pPtr = nullptr;
+    }
+    ~SmartPtr() {
+        if (m_pPtr != nullptr)
+            free(m_pPtr);
+    }
+    T* operator->() {
+        return m_pPtr;
+    }
+    T* GetRawPtr() {
+        return m_pPtr;
+    }
+private:
+    T* m_pPtr = nullptr;
+};
+
+Game::Game() {
+}
+
+Game::~Game() {
+}
+
+void Game::Run() {
+    Renderer::GetInstance().Initialize(
         m_platform.GetWindowHandle(),
         std::array<const std::string, 4>{
         "res/stone.png",
@@ -16,25 +42,20 @@ Game::Game()
         "res/blackbread.png",
         "res/bullet.png"
         }
-    )
-{
-}
-Game::~Game() {
-}
+    );
 
-void Game::Run() {
-    std::vector<std::unique_ptr<Entity>> objects;
+    std::vector<SmartPtr<Entity>> objects;
     // Player
-    objects.push_back(std::make_unique<Player>(m_platform, m_renderer, m_physics, 1));
-    Player* pPlayer = dynamic_cast<Player*>(objects[0].get());
+    objects.push_back(SmartPtr<Entity>(new Player(m_platform, m_physics, 1)));
+    Player* pPlayer = dynamic_cast<Player*>(objects[0].GetRawPtr());
     // Walls
-    objects.push_back(std::make_unique<Wall>(m_platform, m_renderer, m_physics, 0, b2Vec2{ 5.0f, 7.0f }, b2Vec2{ 10.0f, 1.0f }));
-    objects.push_back(std::make_unique<Wall>(m_platform, m_renderer, m_physics, 0, b2Vec2{ 0.0f, 3.0f }, b2Vec2{ 1.0f, 7.0f }));
-    objects.push_back(std::make_unique<Wall>(m_platform, m_renderer, m_physics, 0, b2Vec2{ 10.0f, 3.0f }, b2Vec2{ 1.0f, 7.0f }));
-    objects.push_back(std::make_unique<Wall>(m_platform, m_renderer, m_physics, 0, b2Vec2{ 5.0f, 3.0f }, b2Vec2{ 6.0f, 1.0f }));
+    objects.push_back(SmartPtr<Entity>(new Wall(m_platform, m_physics, 0, b2Vec2{ 5.0f, 7.0f }, b2Vec2{ 10.0f, 1.0f })));
+    objects.push_back(SmartPtr<Entity>(new Wall(m_platform, m_physics, 0, b2Vec2{ 0.0f, 3.0f }, b2Vec2{ 1.0f, 7.0f })));
+    objects.push_back(SmartPtr<Entity>(new Wall(m_platform, m_physics, 0, b2Vec2{ 10.0f, 3.0f }, b2Vec2{ 1.0f, 7.0f })));
+    objects.push_back(SmartPtr<Entity>(new Wall(m_platform, m_physics, 0, b2Vec2{ 5.0f, 3.0f }, b2Vec2{ 6.0f, 1.0f })));
     // Enemies
-    objects.push_back(std::make_unique<Enemy>(m_platform, m_renderer, m_physics, 2, b2Vec2{ 4.0f, 1.0f }));
-    objects.push_back(std::make_unique<Enemy>(m_platform, m_renderer, m_physics, 2, b2Vec2{ 6.0f, 1.0f }));
+    objects.push_back(SmartPtr<Entity>(new Enemy(m_platform, m_physics, 2, b2Vec2{ 4.0f, 1.0f })));
+    objects.push_back(SmartPtr<Entity>(new Enemy(m_platform, m_physics, 2, b2Vec2{ 6.0f, 1.0f })));
 
     constexpr float physicsTimestep = 1/60.0f;
 
@@ -62,11 +83,11 @@ void Game::Run() {
             );
             // Bullet dir
             b2Vec2 bulletDir = b2MulSV(1.0f, b2Normalize(b2Sub(b2Vec2{ .x = mouseX, .y = mouseY }, pPlayer->GetPosition())));
-            objects.push_back(std::make_unique<Bullet>(
-                    m_platform, m_renderer, m_physics, 3,
-                    b2Add(pPlayer->GetPosition(), bulletDir),
+            objects.push_back(SmartPtr<Entity>(new Bullet(
+                    m_platform, m_physics, 3,
+                    pPlayer->GetPosition() + bulletDir,
                     bulletDir
-            ));
+            )));
             clickHasBeenReleased = false;
         }
         else if (!clickIsPressed) {
@@ -85,7 +106,8 @@ void Game::Run() {
             object->Render();
         }
 
-        m_renderer.RenderScene();
+        Renderer::GetInstance().RenderScene();
     }
+    Renderer::GetInstance().Release();
 }
 

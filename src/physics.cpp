@@ -3,6 +3,13 @@
 #include <vector>
 #include "box2d/box2d.h"
 
+b2Vec2 operator+(const b2Vec2& left, const b2Vec2& right) {
+    return b2Vec2{
+        .x = left.x + right.x,
+            .y = left.y + right.y
+    };
+}
+
 std::vector<b2Vec2> PhysicsRigidBox::GetWorldVertices() const {
     std::vector<b2Vec2> vertices(polygon.count);
     for (int i = 0; i < polygon.count; i++) {

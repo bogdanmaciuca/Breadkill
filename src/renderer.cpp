@@ -11,7 +11,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
-Renderer::Renderer(SDL_Window* pWindow, const std::span<const std::string>& texturePaths) : m_pWindow(pWindow) {
+void Renderer::Initialize(SDL_Window* pWindow, const std::span<const std::string>& texturePaths) {
+    m_pWindow = pWindow;
+
     // Set up orthographic projection
     int wndWidth, wndHeight;
     SDL_GetWindowSize(pWindow, &wndWidth, &wndHeight);
@@ -66,9 +68,14 @@ Renderer::Renderer(SDL_Window* pWindow, const std::span<const std::string>& text
     );
 }
 
-Renderer::~Renderer() {
+void Renderer::Release() {
     SDL_ReleaseWindowFromGPUDevice(m_pDevice, m_pWindow);
     SDL_DestroyGPUDevice(m_pDevice);
+}
+
+Renderer& Renderer::GetInstance() {
+    static Renderer instance;
+    return instance;
 }
 
 void Renderer::RenderScene() {
@@ -158,7 +165,7 @@ SDL_GPUShader* Renderer::LoadShader(const std::string& path, ShaderStage shaderS
     size_t codeSize;
     Uint8* pCode = (Uint8*)SDL_LoadFile(path.c_str(), &codeSize);
     if (pCode == nullptr)
-        throw RendererException("Could not read shader source");
+        throw FilesystemException("Could not read shader source");
     SDL_GPUShaderStage sdlShaderStage = 
         (shaderStage == ShaderStage::Vertex ?
          SDL_GPU_SHADERSTAGE_VERTEX : SDL_GPU_SHADERSTAGE_FRAGMENT);
@@ -249,7 +256,6 @@ SDL_GPUTexture* Renderer::CreateTexture(SDL_GPUCommandBuffer* pCommandBuffer, co
     int width, height;
     int numChannels;
     void* pixels = stbi_load(path.c_str(), &width, &height, &numChannels, 4);
-    //assert(numChannels == 4);
 
     SDL_GPUTextureCreateInfo createInfo = {
         .type   = SDL_GPU_TEXTURETYPE_2D,

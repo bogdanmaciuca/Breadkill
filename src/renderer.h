@@ -17,14 +17,23 @@ struct SDL_GPUSampler;
 
 enum {
     VERTEX_BUFFER_SIZE = 8192,
-    NUM_SAMPLERS = 0,
-    NUM_UNIFORM_BUFFERS = 1
 };
 
 class RendererException : public std::exception {
 public:
     RendererException(const std::string& message)
         : m_message("Renderer exception: " + message + "\n") {}
+    virtual const char* what() const {
+        return m_message.c_str();
+    }
+private:
+    const std::string m_message;
+};
+
+class FilesystemException : public std::exception {
+public:
+    FilesystemException(const std::string& message)
+        : m_message("Filesystem exception: " + message + "\n") {}
     virtual const char* what() const {
         return m_message.c_str();
     }
@@ -44,11 +53,16 @@ struct RendererTriangle {
 
 class Renderer {
 public:
-    Renderer(SDL_Window* pWindow, const std::span<const std::string>& texturePaths);
-    ~Renderer();
+    Renderer(const Renderer&) = delete;
+    // texturePaths: container of texture filenames that will be loaded by the renderer
+    //               each texture will be accessed by index into this container
+    void Initialize(SDL_Window* pWindow, const std::span<const std::string>& texturePaths);
+    void Release();
+    static Renderer& GetInstance();
     void RenderScene();
     void PushTriangle(const RendererTriangle& triangle);
 private:
+    Renderer() {};
     std::vector<RendererTriangle> m_triangles;
     glm::mat4 m_projection;
     SDL_Window* m_pWindow;
