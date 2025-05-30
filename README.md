@@ -95,6 +95,11 @@ Entity* MakeEnemy(b2Vec2 pos);
 Entity* MakeWall(b2Vec2 pos, b2Vec2 size);
 Entity* MakeBullet(b2Vec2 pos, b2Vec2 dir);
 ```
+## Object pool
+```cpp
+std::vector<SmartPtr<Entity>> objects;
+```
+- allows easy memory management
 
 # Operators
 ```cpp
