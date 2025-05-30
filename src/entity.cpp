@@ -157,4 +157,32 @@ void Bullet::Render() {
     Renderer::GetInstance().PushTriangle(triangle);
 }
 
+enum TextureIndices {
+    WALL_TEX_IDX   = 0,
+    PLAYER_TEX_IDX = 1,
+    ENEMY_TEX_IDX  = 2,
+    BULLET_TEX_IDX = 3
+};
+
+EntityFactory::EntityFactory(Platform& platform, Physics& physics) :
+    m_platformRef(platform),
+    m_physicsRef(physics),
+    m_playerForce(PLAYER_FORCE),
+    m_enemyForce(PLAYER_FORCE),
+    m_bulletRadius(BULLET_RADIUS),
+    m_bulletSpeedCoef(BULLET_SPEED_COEF)
+{}
+
+Entity* EntityFactory::MakePlayer() {
+    return new Player(m_platformRef, m_physicsRef, PLAYER_TEX_IDX);
+}
+Entity* EntityFactory::MakeEnemy(b2Vec2 pos) {
+    return new Enemy(m_platformRef, m_physicsRef, ENEMY_TEX_IDX, pos);
+}
+Entity* EntityFactory::MakeWall(b2Vec2 pos, b2Vec2 size) {
+    return new Wall(m_platformRef, m_physicsRef, WALL_TEX_IDX, pos, size);
+}
+Entity* EntityFactory::MakeBullet(b2Vec2 pos, b2Vec2 dir) {
+    return new Bullet(m_platformRef, m_physicsRef, BULLET_TEX_IDX, pos + dir * 0.5f, dir);
+}
 

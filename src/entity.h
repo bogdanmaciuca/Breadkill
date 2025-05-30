@@ -1,10 +1,14 @@
 #pragma once
 
 #include <array>
-#include <variant>
 #include "physics.h"
 #include "renderer.h"
 #include "platform.h"
+
+constexpr float PLAYER_FORCE      = 0.008f;
+constexpr float ENEMY_FORCE       = 0.0004f;
+constexpr float BULLET_RADIUS     = 0.10f;
+constexpr float BULLET_SPEED_COEF = 1.0f;
 
 class Entity {
 public:
@@ -36,8 +40,6 @@ constexpr std::array<PhysicsSoftBodyJointConn, 8> g_softbodyConnections = {
     PhysicsSoftBodyJointConn{ 1, 4 },
 };
 
-constexpr float PLAYER_FORCE = 0.008f;
-
 class Player : public Entity {
 public:
     Player(Platform& platform, Physics& physics, unsigned int texIdx);
@@ -58,8 +60,6 @@ private:
     PhysicsRigidBox m_physicsObject;
 };
 
-constexpr float ENEMY_FORCE = 0.0004f;
-
 class Enemy : public Entity {
 public:
     Enemy(Platform& platform, Physics& physics, unsigned int texIdx, b2Vec2 pos);
@@ -69,9 +69,6 @@ private:
     PhysicsSoftBody m_physicsObject;
 };
 
-constexpr float BULLET_RADIUS = 0.10f;
-constexpr float BULLET_SPEED_COEF = 1.0f;
-
 class Bullet : public Entity {
 public:
     Bullet(Platform& platform, Physics& physics, unsigned int texIdx, b2Vec2 pos, b2Vec2 dir);
@@ -79,4 +76,20 @@ public:
     void Update() override {};
 private:
     PhysicsRigidCircle m_physicsObject;
+};
+
+class EntityFactory {
+public:
+    EntityFactory(Platform& platform, Physics& physics);
+    Entity* MakePlayer();
+    Entity* MakeEnemy(b2Vec2 pos);
+    Entity* MakeWall(b2Vec2 pos, b2Vec2 size);
+    Entity* MakeBullet(b2Vec2 pos, b2Vec2 dir);
+private:
+    Platform& m_platformRef;
+    Physics& m_physicsRef;
+    float m_playerForce;
+    float m_enemyForce;
+    float m_bulletRadius;
+    float m_bulletSpeedCoef;
 };

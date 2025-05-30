@@ -44,18 +44,19 @@ void Game::Run() {
         }
     );
 
+    EntityFactory factory(m_platform, m_physics);
     std::vector<SmartPtr<Entity>> objects;
     // Player
-    objects.push_back(SmartPtr<Entity>(new Player(m_platform, m_physics, 1)));
+    objects.push_back(SmartPtr<Entity>(factory.MakePlayer()));
     Player* pPlayer = dynamic_cast<Player*>(objects[0].GetRawPtr());
     // Walls
-    objects.push_back(SmartPtr<Entity>(new Wall(m_platform, m_physics, 0, b2Vec2{ 5.0f, 7.0f }, b2Vec2{ 10.0f, 1.0f })));
-    objects.push_back(SmartPtr<Entity>(new Wall(m_platform, m_physics, 0, b2Vec2{ 0.0f, 3.0f }, b2Vec2{ 1.0f, 7.0f })));
-    objects.push_back(SmartPtr<Entity>(new Wall(m_platform, m_physics, 0, b2Vec2{ 10.0f, 3.0f }, b2Vec2{ 1.0f, 7.0f })));
-    objects.push_back(SmartPtr<Entity>(new Wall(m_platform, m_physics, 0, b2Vec2{ 5.0f, 3.0f }, b2Vec2{ 6.0f, 1.0f })));
+    objects.push_back(SmartPtr<Entity>(factory.MakeWall(b2Vec2{5, 7}, b2Vec2(10, 1))));
+    objects.push_back(SmartPtr<Entity>(factory.MakeWall(b2Vec2{0, 3}, b2Vec2(1, 7))));
+    objects.push_back(SmartPtr<Entity>(factory.MakeWall(b2Vec2{10, 3}, b2Vec2(1, 7))));
+    objects.push_back(SmartPtr<Entity>(factory.MakeWall(b2Vec2{5, 3}, b2Vec2(6, 1))));
     // Enemies
-    objects.push_back(SmartPtr<Entity>(new Enemy(m_platform, m_physics, 2, b2Vec2{ 4.0f, 1.0f })));
-    objects.push_back(SmartPtr<Entity>(new Enemy(m_platform, m_physics, 2, b2Vec2{ 6.0f, 1.0f })));
+    objects.push_back(SmartPtr<Entity>(factory.MakeEnemy(b2Vec2{4, 1})));
+    objects.push_back(SmartPtr<Entity>(factory.MakeEnemy(b2Vec2{6, 1})));
 
     constexpr float physicsTimestep = 1/60.0f;
 
@@ -81,13 +82,8 @@ void Game::Run() {
                 PLAYER_FORCE * -(mouseX - pPlayer->GetPosition().x),
                 PLAYER_FORCE * -(mouseY - pPlayer->GetPosition().y)
             );
-            // Bullet dir
             b2Vec2 bulletDir = b2MulSV(1.0f, b2Normalize(b2Sub(b2Vec2{ .x = mouseX, .y = mouseY }, pPlayer->GetPosition())));
-            objects.push_back(SmartPtr<Entity>(new Bullet(
-                    m_platform, m_physics, 3,
-                    pPlayer->GetPosition() + bulletDir,
-                    bulletDir
-            )));
+            objects.push_back(SmartPtr<Entity>(factory.MakeBullet(pPlayer->GetPosition(), bulletDir)));
             clickHasBeenReleased = false;
         }
         else if (!clickIsPressed) {

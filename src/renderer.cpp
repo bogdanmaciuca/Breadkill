@@ -4,7 +4,6 @@
 #include <span>
 #include <string>
 #include "SDL3/SDL.h"
-#include "SDL3_image/SDL_image.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 

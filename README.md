@@ -82,6 +82,20 @@ T* GetRawPtr();
 ```
 - frees the memory automatically when it gets out of scope
 
+# Design patterns
+## Singleton
+- The `Renderer` class
+- can be cleanly accessed from anywhere after initialization
+## Factory
+- The `EntityFactory` class
+```cpp
+EntityFactory(Platform& platform, Physics& physics);
+Entity* MakePlayer();
+Entity* MakeEnemy(b2Vec2 pos);
+Entity* MakeWall(b2Vec2 pos, b2Vec2 size);
+Entity* MakeBullet(b2Vec2 pos, b2Vec2 dir);
+```
+
 # Operators
 ```cpp
 b2Vec2 operator+(b2Vec2 left, b2Vec2 right);
